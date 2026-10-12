@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Job {{ job.id }} · C → Rust Verifier</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0a0e17; --surface: #111827; --surface-2: #1a2234;
+      --border: #2d3a52; --border-subtle: #1e293b;
+      --text: #f1f5f9; --text-secondary: #94a3b8; --text-muted: #64748b;
+      --primary: #3b82f6; --success: #10b981; --warning: #f59e0b; --danger: #ef4444;
+      --radius: 12px;
+      --font: "IBM Plex Sans", system-ui, sans-serif;
+      --mono: "IBM Plex Mono", Consolas, monospace;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font); background: var(--bg); color: var(--text);
+      min-height: 100vh; -webkit-font-smoothing: antialiased;
+    }
+    a { color: var(--primary); text-decoration: none; }
+    a:hover { color: #60a5fa; }
+    .header {
+      position: sticky; top: 0; z-index: 50;
+      background: rgba(10, 14, 23, 0.92); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .header-inner {
+      max-width: 1100px; margin: 0 auto; padding: 0 32px; height: 56px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .logo {
+      display: flex; align-items: center; gap: 10px;
+      font-weight: 600; font-size: 15px; color: var(--text);
+    }
+    .logo-mark {
+      width: 28px; height: 28px; border-radius: 7px;
+      background: linear-gradient(145deg, #3b82f6, #6366f1);
+      display: grid; place-items: center; font-size: 11px; font-weight: 700; color: white;
+    }
+    .nav { display: flex; gap: 4px; }
+    .nav a {
+      color: var(--text-secondary); font-size: 13.5px; font-weight: 500;
+      padding: 6px 12px; border-radius: 6px;
+    }
+    .nav a:hover { color: var(--text); background: var(--surface-2); }
+    .main { max-width: 1100px; margin: 0 auto; padding: 32px 32px 64px; }
+    .page-header {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; margin-bottom: 28px;
+    }
+    .page-header h1 { font-size: 22px; font-weight: 600; letter-spacing: -0.02em; }
+    .pill {
+      display: inline-block; padding: 4px 12px; border-radius: 999px;
+      font-size: 12px; font-weight: 600;
+    }
+    .pill.completed { background: rgba(16,185,129,0.12); color: var(--success); }
+    .pill.verification_failed { background: rgba(245,158,11,0.12); color: var(--warning); }
+    .pill.failed { background: rgba(239,68,68,0.12); color: var(--danger); }
+    .pill.pending { background: rgba(59,130,246,0.12); color: var(--primary); }
+    .meta {
+      display: flex; flex-wrap: wrap; gap: 6px 18px;
+      font-size: 13px; color: var(--text-muted);
+    }
+    .meta strong { color: var(--text-secondary); font-weight: 500; }
+    .panel {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+      margin-bottom: 16px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    }
+    .panel-head {
+      padding: 10px 16px; background: var(--surface-2); border-bottom: 1px solid var(--border);
+      font-size: 11px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.05em; color: var(--text-muted);
+    }
+    .panel.error .panel-head { color: var(--danger); }
+    pre {
+      margin: 0; padding: 16px 18px; font-family: var(--mono); font-size: 13px;
+      line-height: 1.65; white-space: pre-wrap; word-break: break-word;
+      color: var(--text); max-height: 400px; overflow: auto;
+    }
+    .panel.error pre { color: #fca5a5; }
+    .back {
+      display: inline-flex; align-items: center; gap: 6px; margin-top: 8px;
+      padding: 8px 14px; font-size: 13px; font-weight: 500; color: var(--text-secondary);
+      border: 1px solid var(--border); border-radius: 8px; transition: all 0.15s;
+    }
+    .back:hover {
+      color: var(--text); border-color: var(--primary);
+      background: rgba(59,130,246,0.06); text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo">
+        <div class="logo-mark">CR</div>
+        C → Rust Verifier
+      </div>
+      <nav class="nav">
+        <a href="{% url 'index' %}">Translator</a>
+        <a href="{% url 'history' %}">History</a>
+      </nav>
+    </div>
+  </header>
+  <main class="main">
+    <div class="page-header">
+      <h1>Job #{{ job.id }}</h1>
+      <span class="pill {{ job.status }}">{{ job.status }}</span>
+      <div class="meta">
+        <span><strong>Model</strong> {{ job.model_name }}</span>
+        <span><strong>Created</strong> {{ job.created_at }}</span>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-head">C Code</div>
+      <pre>{{ job.c_code }}</pre>
+    </div>
+    <div class="panel">
+      <div class="panel-head">Rust Code</div>
+      <pre>{{ job.rust_code|default:"No Rust code generated." }}</pre>
+    </div>
+    {% if job.error_message %}
+    <div class="panel error">
+      <div class="panel-head">Error</div>
+      <pre>{{ job.error_message }}</pre>
+    </div>
+    {% endif %}
+    {% if job.verification_report %}
+    <div class="panel">
+      <div class="panel-head">Verification Report</div>
+      <pre>{{ job.verification_report }}</pre>
+    </div>
+    {% endif %}
+    <a class="back" href="{% url 'history' %}">← Back to History</a>
+  </main>
+</body>
+</html>
